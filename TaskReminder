@@ -1,4 +1,7 @@
 //Setup google tasks. Install Tasks v1 API.
+//Tasks today and overdue will be added to the Docs.
+//Texts in Docs will be sent to myself via gmail.
+//You can tell if you are lazy or not by the length of the reply-message.
 
 //Get every list.
 /**
