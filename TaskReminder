@@ -1,0 +1,68 @@
+//Setup google tasks. Install Tasks v1 API.
+
+//Get every list.
+/**
+ * Lists tasks titles and IDs.
+ */
+function listTaskLists() {
+  var taskLists = Tasks.Tasklists.list();
+  if (taskLists.items) {
+    for (var i = 0; i < taskLists.items.length; i++) {
+      var taskList = taskLists.items[i];
+      Logger.log('Task list with title "%s" and ID "%s" was found.',
+                 taskList.title, taskList.id);
+    }
+  } else {
+    Logger.log('No task lists found.');
+  }
+}
+
+//Get tasks of each lists.
+/**
+ * Lists task items for a provided tasklist ID.
+ * @param  {string} taskListId The tasklist ID.
+ */
+function listTasks() {
+  var taskListId = "(TaskListID)"; //Task list ID
+  var tasks = Tasks.Tasks.list(taskListId);
+  if (tasks.items) {
+    for (var i = 0; i < tasks.items.length; i++) {
+      var task = tasks.items[i];
+      Logger.log('Task with title "%s" and ID "%s" was found.',
+                 task.title, task.id);
+      if (new Date(task.due) < new Date() ){
+        now = new Date();
+        task.due = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + 'T00:00:00.000Z';
+        Logger.log("Do title '%s' mother fucker!", task.title);
+        //Send tasks list to gmail as a text.
+        //Select file.
+        const doc = DocumentApp.openById("Open Docs by ID");  //Doc ID.
+        //Select body.
+        const body = doc.getBody();
+        //Select paragraph.
+        const paragraph1 = "Good luck!"; 
+        const paragraph = body.appendParagraph(paragraph1);
+        //Select overdue tasks as mailcontent as a text.
+        const text = "   " + task.title + "--" + task.notes;
+        paragraph.appendText(text);
+        Logger.log(text);
+      }
+    }
+  } else {
+    Logger.log('No tasks found.');
+  }
+}
+//send e-mail.
+function sendEmail(){
+  listTasks();
+  //Import email address.
+  const email = Session.getActiveUser().getEmail();
+  Logger.log(email);
+  const subject = "(Message to yourself)";//Cheer up yourself.
+  //Content settings.
+  const doc = DocumentApp.openById("Open docs by ID"); //Doc ID.
+  const body = doc.getBody();
+  const mailcontent = body.editAsText().getText();
+   //Set sending.
+  GmailApp.sendEmail(email,subject,mailcontent);
+}
